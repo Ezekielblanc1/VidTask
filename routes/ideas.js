@@ -15,7 +15,7 @@ router.get('/add',ensureAuth, (req, res)=> {
 //Ideas page
 router.get('/',ensureAuth, (req, res) => {
   Ideas
-    .find({})
+    .find({user: req.user.id})
     .sort({date: 'desc'})
     .then(ideas => {
       res.render('show', {ideas})
@@ -42,7 +42,8 @@ router.post('/',ensureAuth, (req, res) => {
   } else {
     const idea = new Ideas({
       title,
-      details
+      details,
+      user: req.user.id
     })
     .save()
     .then(idea => {
@@ -61,7 +62,12 @@ router.get('/edit/:id',ensureAuth, (req, res) => {
   Ideas
   .findById(id)
   .then(idea => {
-    res.render('edit', {idea})
+    if(idea.user !== req.user.id){
+      req.flash('error_msg', 'Not authorized');
+      res.redirect('/ideas');
+    }else{
+      res.render('edit', {idea})
+    }
   })
   
 })
