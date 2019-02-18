@@ -1,5 +1,5 @@
 const express = require('express');
-const path = require('path')
+const path = require('path');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const passport = require('passport');
@@ -11,6 +11,9 @@ const app = express();
 //Passport config
 require('./config/passport')(passport);
 
+//DB config
+const db = require('./config/database');
+
 
 //Load the routes
 const ideaRoute = require('./routes/ideas')
@@ -18,7 +21,8 @@ const usersRoute = require('./routes/users')
 
 
 
-mongoose.connect('mongodb://localhost:27017/vidtask', {useNewUrlParser: true})
+
+mongoose.connect(db.mongoURI, {useNewUrlParser: true})
 .then(() => console.log('Connected to database'))
 .catch(err => console.error('Could not connect to database')); 
 
@@ -78,5 +82,5 @@ app.use('/users', usersRoute)
 
 
 
-const port = 7000;
+const port = process.env.PORT||7000;
 app.listen( port, () => console.log(`App connected on port ${port}`))
