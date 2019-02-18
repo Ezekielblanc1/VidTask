@@ -3,25 +3,17 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const Ideas = require('../models/idea')
 
-router.get('/add', (req, res)=> {
+const { ensureAuth} = require('../helper/auth');
+
+router.get('/add',ensureAuth, (req, res)=> {
   let errors = [];
   res.render('ideas',{errors})
 })
 
-//Edit idea page
 
-router.get('/edit/:id', (req, res) => {
-  const id = req.params.id
-  Ideas
-  .findById(id)
-  .then(idea => {
-    res.render('edit', {idea})
-  })
-  
-})
 
 //Ideas page
-router.get('/', (req, res) => {
+router.get('/',ensureAuth, (req, res) => {
   Ideas
     .find({})
     .sort({date: 'desc'})
@@ -31,7 +23,7 @@ router.get('/', (req, res) => {
 })
 
 //Post request for ideas
-router.post('/', (req, res) => {
+router.post('/',ensureAuth, (req, res) => {
    let errors = [];
    const {title, details} = req.body;
   if(!title){
@@ -61,9 +53,21 @@ router.post('/', (req, res) => {
   }
 })
 
+
+//Edit idea page
+
+router.get('/edit/:id',ensureAuth, (req, res) => {
+  const id = req.params.id
+  Ideas
+  .findById(id)
+  .then(idea => {
+    res.render('edit', {idea})
+  })
+  
+})
 //Edit form logic
 
-router.put('/:id', (req, res) => {
+router.put('/:id',ensureAuth, (req, res) => {
   const id = req.params.id;
   const {title, details} = req.body
   Ideas
@@ -74,7 +78,7 @@ router.put('/:id', (req, res) => {
   })
 });
 
-router.delete('/:id', (req, res)=> {
+router.delete('/:id',ensureAuth, (req, res)=> {
   const id = req.params.id;
   Ideas
   .findByIdAndDelete(id)
