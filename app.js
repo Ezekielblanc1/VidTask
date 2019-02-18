@@ -1,3 +1,4 @@
+require('./config/database')
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -12,7 +13,9 @@ const app = express();
 require('./config/passport')(passport);
 
 //DB config
-const db = require('./config/database');
+// const db = require('./config/database');
+const db = process.env.MONGODB_URI
+console.log(db)
 
 
 //Load the routes
@@ -22,7 +25,7 @@ const usersRoute = require('./routes/users')
 
 
 
-mongoose.connect(db.mongoURI, {useNewUrlParser: true})
+mongoose.connect(db, {useNewUrlParser: true})
 .then(() => console.log('Connected to database'))
 .catch(err => console.error('Could not connect to database')); 
 
@@ -82,5 +85,5 @@ app.use('/users', usersRoute)
 
 
 
-const port = process.env.PORT||7000;
+const port = process.env.PORT;
 app.listen( port, () => console.log(`App connected on port ${port}`))
